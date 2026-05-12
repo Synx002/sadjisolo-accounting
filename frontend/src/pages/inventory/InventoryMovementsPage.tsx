@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import Spinner from '@/components/ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
+import { useLayoutPage } from '@/components/layout/LayoutPageContext'
 import { formatDate } from '@/lib/utils'
 import type { InventoryMovement } from '@/types'
 
@@ -36,6 +37,7 @@ export default function InventoryMovementsPage() {
   const { id } = useParams<{ id: string }>()
   const qc = useQueryClient()
   const [page, setPage] = useState(1)
+  const { setLayoutPage } = useLayoutPage()
 
   const { data: item } = useQuery({
     queryKey: ['inventory-item', id],
@@ -74,21 +76,20 @@ export default function InventoryMovementsPage() {
 
   const selectedType = watch('type')
 
+  useLayoutEffect(() => {
+    const description = item
+      ? `${item.name}${item.sku ? ` · ${item.sku}` : ''}`
+      : undefined
+    setLayoutPage({ title: 'Riwayat Pergerakan Stok', description })
+    return () => setLayoutPage(null)
+  }, [item, setLayoutPage])
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
           <Link to="/inventory"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold">Riwayat Pergerakan Stok</h1>
-          {item && (
-            <p className="text-sm text-gray-500">
-              {item.name}
-              {item.sku && <span className="ml-2 font-mono text-xs bg-gray-100 px-1 py-0.5 rounded">{item.sku}</span>}
-            </p>
-          )}
-        </div>
         {item && (
           <div className="ml-auto text-right">
             <p className="text-xs text-gray-400">Stok Saat Ini</p>

@@ -17,7 +17,7 @@ import PageHeader from '@/components/layout/PageHeader'
 import { formatCurrency } from '@/lib/utils'
 
 const lineSchema = z.object({
-  account_id: z.number({ invalid_type_error: 'Pilih akun' }).int().positive('Pilih akun'),
+  account_id: z.number({ message: 'Pilih akun' }).int().positive('Pilih akun'),
   debit: z.number().min(0),
   credit: z.number().min(0),
   description: z.string().optional(),

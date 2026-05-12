@@ -1,3 +1,6 @@
+import { useLayoutEffect } from 'react'
+import { useLayoutPage } from '@/components/layout/LayoutPageContext'
+
 interface PageHeaderProps {
   title: string
   description?: string
@@ -5,13 +8,18 @@ interface PageHeaderProps {
 }
 
 export default function PageHeader({ title, description, action }: PageHeaderProps) {
+  const { setLayoutPage } = useLayoutPage()
+
+  useLayoutEffect(() => {
+    setLayoutPage({ title, description })
+    return () => setLayoutPage(null)
+  }, [title, description, setLayoutPage])
+
+  if (!action) return null
+
   return (
-    <div className="flex items-start justify-between mb-6">
-      <div>
-        <h1 className="text-xl font-bold text-gray-900">{title}</h1>
-        {description && <p className="text-sm text-gray-500 mt-0.5">{description}</p>}
-      </div>
-      {action && <div>{action}</div>}
+    <div className="flex justify-end mb-6">
+      <div>{action}</div>
     </div>
   )
 }

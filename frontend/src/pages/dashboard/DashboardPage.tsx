@@ -3,6 +3,7 @@ import { FileText, ShoppingCart, Receipt, TrendingUp, TrendingDown, DollarSign }
 import { Link } from 'react-router-dom'
 import { reportsApi } from '@/api/reports'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import PageHeader from '@/components/layout/PageHeader'
 import { formatCurrency } from '@/lib/utils'
 import Spinner from '@/components/ui/Spinner'
 
@@ -25,12 +26,10 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          Ringkasan bulan {today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}
-        </p>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description={`Ringkasan bulan ${today.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })}`}
+      />
 
       {/* Summary cards */}
       {isLoading ? (

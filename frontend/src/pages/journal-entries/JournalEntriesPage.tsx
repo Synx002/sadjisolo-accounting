@@ -111,7 +111,7 @@ export default function JournalEntriesPage() {
                     <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide py-3">
                       Deskripsi
                     </TableHead>
-                    <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide py-3 w-[180px]">
+                    <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide py-3 w-[250px]">
                       Referensi
                     </TableHead>
                     <TableHead className="text-xs font-semibold text-gray-500 uppercase tracking-wide py-3 text-right w-[150px]">

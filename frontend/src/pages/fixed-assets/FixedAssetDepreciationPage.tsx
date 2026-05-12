@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useLayoutEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -15,6 +15,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Spinner from '@/components/ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
+import { useLayoutPage } from '@/components/layout/LayoutPageContext'
 
 const schema = z.object({
   period_year: z.number().int().min(1900).max(2100),
@@ -33,6 +34,7 @@ export default function FixedAssetDepreciationPage() {
   const { id } = useParams<{ id: string }>()
   const qc = useQueryClient()
   const [page, setPage] = useState(1)
+  const { setLayoutPage } = useLayoutPage()
 
   const { data: asset } = useQuery({
     queryKey: ['fixed-asset', id],
@@ -81,16 +83,18 @@ export default function FixedAssetDepreciationPage() {
       ? (asset.cost - (asset.salvage_value ?? 0)) / asset.useful_life_months
       : 0
 
+  useLayoutEffect(() => {
+    const description = asset ? `${asset.name} · ${asset.asset_code}` : undefined
+    setLayoutPage({ title: 'Penyusutan Aset Tetap', description })
+    return () => setLayoutPage(null)
+  }, [asset, setLayoutPage])
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" asChild>
           <Link to="/fixed-assets"><ArrowLeft className="w-4 h-4" /></Link>
         </Button>
-        <div>
-          <h1 className="text-xl font-semibold">Penyusutan Aset Tetap</h1>
-          {asset && <p className="text-sm text-gray-500">{asset.name} · {asset.asset_code}</p>}
-        </div>
       </div>
 
       {/* Info Aset */}
