@@ -20,10 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             ChartOfAccountsSeeder::class,
             AccountMappingSeeder::class,
-            DummyDataSeeder::class,
         ]);
-
-        // User::factory(10)->create();
 
         $user = User::firstOrCreate(
             ['email' => 'test@example.com'],
@@ -31,5 +28,9 @@ class DatabaseSeeder extends Seeder
         );
 
         $user->assignRole('Owner');
+
+        $this->call([
+            DummyDataSeeder::class,
+        ]);
     }
 }
