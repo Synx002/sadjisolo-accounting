@@ -1,4 +1,4 @@
-# Tekad Accounting
+# Sadji Solo Accounting
 
 Sistem akuntansi UMKM berbasis web.
 
