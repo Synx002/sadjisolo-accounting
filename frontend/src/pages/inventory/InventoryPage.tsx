@@ -2,8 +2,9 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 import { Plus, Edit, Trash2, ArrowUpDown, Package } from 'lucide-react'
-import { inventoryApi } from '@/api/inventory'
+import { inventoryApi, type InventoryStockFilter } from '@/api/inventory'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent } from '@/components/ui/card'
 import Spinner from '@/components/ui/Spinner'
@@ -13,11 +14,12 @@ import type { InventoryItem } from '@/types'
 
 export default function InventoryPage() {
   const [page, setPage] = useState(1)
+  const [stockFilter, setStockFilter] = useState<InventoryStockFilter>('all')
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['inventory', page],
-    queryFn: () => inventoryApi.list(page).then((r) => r.data),
+    queryKey: ['inventory', page, stockFilter],
+    queryFn: () => inventoryApi.list(page, 10, stockFilter).then((r) => r.data),
   })
 
   const deleteMutation = useMutation({
@@ -35,18 +37,35 @@ export default function InventoryPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Inventori"
-        description="Kelola item stok barang"
-        action={
-          <Button className="gap-2 shadow-sm">
-            <Link to="/inventory/create" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Tambah Item
-            </Link>
-          </Button>
-        }
-      />
+      <PageHeader title="Inventori" description="Kelola item stok barang" />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Stok</span>
+          <Select
+            value={stockFilter}
+            onValueChange={(v) => {
+              setStockFilter(v as InventoryStockFilter)
+              setPage(1)
+            }}
+          >
+            <SelectTrigger className="h-8 w-44 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua item</SelectItem>
+              <SelectItem value="low">Stok menipis</SelectItem>
+              <SelectItem value="ok">Di atas minimum</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button className="gap-2 shadow-sm" asChild>
+          <Link to="/inventory/create" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Tambah Item
+          </Link>
+        </Button>
+      </div>
 
       <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
         <CardContent className="p-0">

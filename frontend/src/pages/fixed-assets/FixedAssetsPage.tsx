@@ -7,6 +7,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import StatusBadge from '@/components/ui/StatusBadge'
 import Spinner from '@/components/ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
@@ -15,11 +16,12 @@ import type { FixedAsset } from '@/types'
 
 export default function FixedAssetsPage() {
   const [page, setPage] = useState(1)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['fixed-assets', page],
-    queryFn: () => fixedAssetsApi.list(page).then((r) => r.data),
+    queryKey: ['fixed-assets', page, statusFilter],
+    queryFn: () => fixedAssetsApi.list(page, 10, statusFilter).then((r) => r.data),
   })
 
   const deleteMutation = useMutation({
@@ -35,18 +37,36 @@ export default function FixedAssetsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Aset Tetap"
-        description="Kelola aset tetap dan penyusutan"
-        action={
-          <Button className="gap-2 shadow-sm">
-            <Link to="/fixed-assets/create" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Tambah Aset
-            </Link>
-          </Button>
-        }
-      />
+      <PageHeader title="Aset Tetap" description="Kelola aset tetap dan penyusutan" />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v)
+              setPage(1)
+            }}
+          >
+            <SelectTrigger className="h-8 w-44 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua</SelectItem>
+              <SelectItem value="active">Aktif</SelectItem>
+              <SelectItem value="fully_depreciated">Habis disusutkan</SelectItem>
+              <SelectItem value="disposed">Dilepas</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button className="gap-2 shadow-sm" asChild>
+          <Link to="/fixed-assets/create" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Tambah Aset
+          </Link>
+        </Button>
+      </div>
 
       <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
         <CardContent className="p-0">

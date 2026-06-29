@@ -20,10 +20,16 @@ class FixedAssetController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $assets = FixedAsset::query()
+        $query = FixedAsset::query()
             ->withCount('depreciationEntries')
-            ->latest()
-            ->paginate((int) $request->integer('per_page', 10));
+            ->latest();
+
+        $status = $request->string('status');
+        if ($status->isNotEmpty() && in_array($status->toString(), ['active', 'fully_depreciated', 'disposed'], true)) {
+            $query->where('status', $status->toString());
+        }
+
+        $assets = $query->paginate((int) $request->integer('per_page', 10));
 
         return response()->json($assets);
     }

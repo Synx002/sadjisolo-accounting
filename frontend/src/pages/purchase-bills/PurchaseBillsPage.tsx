@@ -7,6 +7,7 @@ import { formatCurrency, formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent } from '@/components/ui/card'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import StatusBadge from '@/components/ui/StatusBadge'
 import Spinner from '@/components/ui/Spinner'
 import Pagination from '@/components/ui/Pagination'
@@ -15,12 +16,13 @@ import type { PurchaseBill } from '@/types'
 
 export default function PurchaseBillsPage() {
   const [page, setPage] = useState(1)
+  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [payingId, setPayingId] = useState<number | null>(null)
   const qc = useQueryClient()
 
   const { data, isLoading } = useQuery({
-    queryKey: ['purchase-bills', page],
-    queryFn: () => purchaseBillsApi.list(page).then((r) => r.data),
+    queryKey: ['purchase-bills', page, statusFilter],
+    queryFn: () => purchaseBillsApi.list(page, 10, statusFilter).then((r) => r.data),
   })
 
   const deleteMutation = useMutation({
@@ -52,18 +54,37 @@ export default function PurchaseBillsPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Purchase Bill"
-        description="Kelola tagihan pembelian"
-        action={
-          <Button className="gap-2 shadow-sm">
-            <Link to="/purchase-bills/create" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Buat Bill
-            </Link>
-          </Button>
-        }
-      />
+      <PageHeader title="Purchase Bill" description="Kelola tagihan pembelian" />
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v)
+              setPage(1)
+            }}
+          >
+            <SelectTrigger className="h-8 w-40 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua</SelectItem>
+              <SelectItem value="draft">Draf</SelectItem>
+              <SelectItem value="received">Diterima</SelectItem>
+              <SelectItem value="paid">Lunas</SelectItem>
+              <SelectItem value="cancelled">Dibatalkan</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button className="gap-2 shadow-sm" asChild>
+          <Link to="/purchase-bills/create" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Buat Purchase Bill
+          </Link>
+        </Button>
+      </div>
 
       <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">
         <CardContent className="p-0">

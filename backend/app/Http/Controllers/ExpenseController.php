@@ -20,9 +20,14 @@ class ExpenseController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $expenses = Expense::query()
-            ->latest()
-            ->paginate((int) $request->integer('per_page', 15));
+        $query = Expense::query()->latest();
+
+        $status = $request->string('status');
+        if ($status->isNotEmpty() && in_array($status->toString(), ['draft', 'paid', 'cancelled'], true)) {
+            $query->where('status', $status->toString());
+        }
+
+        $expenses = $query->paginate((int) $request->integer('per_page', 15));
 
         return response()->json($expenses);
     }

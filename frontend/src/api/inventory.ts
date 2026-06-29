@@ -1,9 +1,17 @@
 import api from '@/lib/axios'
 import type { InventoryItem, InventoryMovement, Paginated } from '@/types'
 
+export type InventoryStockFilter = 'all' | 'low' | 'ok'
+
 export const inventoryApi = {
-  list: (page = 1, perPage = 10) =>
-    api.get<Paginated<InventoryItem>>('/inventory-items', { params: { page, per_page: perPage } }),
+  list: (page = 1, perPage = 10, stock?: InventoryStockFilter) =>
+    api.get<Paginated<InventoryItem>>('/inventory-items', {
+      params: {
+        page,
+        per_page: perPage,
+        ...(stock && stock !== 'all' ? { stock } : {}),
+      },
+    }),
 
   show: (id: number) => api.get<{ data: InventoryItem }>(`/inventory-items/${id}`),
 

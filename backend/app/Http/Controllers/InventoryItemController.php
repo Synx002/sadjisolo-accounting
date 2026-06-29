@@ -20,10 +20,18 @@ class InventoryItemController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $items = InventoryItem::query()
+        $query = InventoryItem::query()
             ->withCount('movements')
-            ->latest()
-            ->paginate((int) $request->integer('per_page', 15));
+            ->latest();
+
+        $stock = $request->string('stock');
+        if ($stock->toString() === 'low') {
+            $query->whereColumn('quantity_on_hand', '<=', 'reorder_level');
+        } elseif ($stock->toString() === 'ok') {
+            $query->whereColumn('quantity_on_hand', '>', 'reorder_level');
+        }
+
+        $items = $query->paginate((int) $request->integer('per_page', 15));
 
         return response()->json($items);
     }

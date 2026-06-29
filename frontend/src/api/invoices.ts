@@ -2,8 +2,14 @@ import api from '@/lib/axios'
 import type { Invoice, Paginated } from '@/types'
 
 export const invoicesApi = {
-  list: (page = 1, perPage = 10) =>
-    api.get<Paginated<Invoice>>('/invoices', { params: { page, per_page: perPage } }),
+  list: (page = 1, perPage = 10, status?: string) =>
+    api.get<Paginated<Invoice>>('/invoices', {
+      params: {
+        page,
+        per_page: perPage,
+        ...(status && status !== 'all' ? { status } : {}),
+      },
+    }),
 
   show: (id: number) => api.get<{ data: Invoice }>(`/invoices/${id}`),
 

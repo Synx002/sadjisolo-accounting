@@ -20,10 +20,16 @@ class PurchaseBillController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $bills = PurchaseBill::query()
+        $query = PurchaseBill::query()
             ->with('items')
-            ->latest()
-            ->paginate((int) $request->integer('per_page', 10));
+            ->latest();
+
+        $status = $request->string('status');
+        if ($status->isNotEmpty() && in_array($status->toString(), ['draft', 'received', 'paid', 'cancelled'], true)) {
+            $query->where('status', $status->toString());
+        }
+
+        $bills = $query->paginate((int) $request->integer('per_page', 10));
 
         return response()->json($bills);
     }

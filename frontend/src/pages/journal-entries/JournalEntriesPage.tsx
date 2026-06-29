@@ -60,35 +60,34 @@ export default function JournalEntriesPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Jurnal Akuntansi"
-        description="Kelola jurnal entri double-entry"
-        action={
-          <Button className="gap-2 shadow-sm">
-            <Link to="/journal-entries/create" className="flex items-center gap-2">
-              <Plus className="w-4 h-4" />
-              Buat Jurnal
-            </Link>
-          </Button>
-        }
-      />
+      <PageHeader title="Jurnal Akuntansi" description="Kelola jurnal entri double-entry" />
 
-      {/* Filter */}
-      <div className="flex items-center gap-3">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Filter Status</span>
-        <Select
-          value={statusFilter}
-          onValueChange={(v) => { setStatusFilter(v); setPage(1) }}
-        >
-          <SelectTrigger className="w-36 h-8 text-sm">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Semua</SelectItem>
-            <SelectItem value="draft">Draf</SelectItem>
-            <SelectItem value="posted">Diposting</SelectItem>
-          </SelectContent>
-        </Select>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</span>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v)
+              setPage(1)
+            }}
+          >
+            <SelectTrigger className="h-8 w-40 text-sm">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Semua</SelectItem>
+              <SelectItem value="draft">Draf</SelectItem>
+              <SelectItem value="posted">Diposting</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+        <Button className="gap-2 shadow-sm" asChild>
+          <Link to="/journal-entries/create" className="flex items-center gap-2">
+            <Plus className="w-4 h-4" />
+            Buat Jurnal
+          </Link>
+        </Button>
       </div>
 
       <Card className="shadow-sm border border-gray-200 rounded-xl overflow-hidden">

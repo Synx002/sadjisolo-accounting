@@ -20,10 +20,16 @@ class InvoiceController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $invoices = Invoice::query()
+        $query = Invoice::query()
             ->with('items')
-            ->latest()
-            ->paginate((int) $request->integer('per_page', 10));
+            ->latest();
+
+        $status = $request->string('status');
+        if ($status->isNotEmpty() && in_array($status->toString(), ['draft', 'sent', 'paid', 'cancelled'], true)) {
+            $query->where('status', $status->toString());
+        }
+
+        $invoices = $query->paginate((int) $request->integer('per_page', 10));
 
         return response()->json($invoices);
     }

@@ -48,36 +48,32 @@ export default function JournalEntryDetailPage() {
 
   return (
     <div>
-      <PageHeader
-        title={entry.journal_number}
-        description="Detail jurnal akuntansi"
-        action={
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/journal-entries')}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Kembali
+      <PageHeader title={entry.journal_number} description="Detail jurnal akuntansi" />
+
+      <div className="flex flex-wrap items-center justify-end gap-2 mb-6">
+        <Button variant="outline" onClick={() => navigate('/journal-entries')}>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Kembali
+        </Button>
+        {entry.status === 'draft' && (
+          <>
+            <Button variant="outline" asChild>
+              <Link to={`/journal-entries/${entry.id}/edit`}>
+                <Edit className="w-4 h-4 mr-2" />
+                Edit
+              </Link>
             </Button>
-            {entry.status === 'draft' && (
-              <>
-                <Button variant="outline" asChild>
-                  <Link to={`/journal-entries/${entry.id}/edit`}>
-                    <Edit className="w-4 h-4 mr-2" />
-                    Edit
-                  </Link>
-                </Button>
-                <Button onClick={handlePost} disabled={posting}>
-                  {posting ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Send className="w-4 h-4 mr-2" />
-                  )}
-                  Posting
-                </Button>
-              </>
-            )}
-          </div>
-        }
-      />
+            <Button onClick={handlePost} disabled={posting}>
+              {posting ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4 mr-2" />
+              )}
+              Posting
+            </Button>
+          </>
+        )}
+      </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <Card>

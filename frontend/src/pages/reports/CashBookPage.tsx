@@ -1,7 +1,16 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Printer, TrendingDown, TrendingUp, Wallet } from 'lucide-react'
+import {
+  ChevronDown,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react'
 import { reportsApi } from '@/api/reports'
+import { exportCashBookExcel, exportCashBookPdf } from '@/lib/cashBookExport'
 import { formatCurrency, formatDate, formatDateInput } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,6 +19,12 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import Spinner from '@/components/ui/Spinner'
 import PageHeader from '@/components/layout/PageHeader'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 function getFirstAndLast() {
   const now = new Date()
@@ -34,16 +49,7 @@ export default function CashBookPage() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Buku Kas Harian"
-        description="Mutasi masuk dan keluar dari akun Kas & Bank"
-        action={
-          <Button variant="outline" size="sm" className="gap-2 shadow-sm" onClick={() => window.print()}>
-            <Printer className="w-4 h-4" />
-            Cetak
-          </Button>
-        }
-      />
+      <PageHeader title="Buku Kas Harian" description="Mutasi masuk dan keluar dari akun Kas & Bank" />
 
       {/* Filter Tanggal */}
       <Card className="shadow-sm border border-gray-200 rounded-xl">
@@ -60,6 +66,40 @@ export default function CashBookPage() {
             <Button className="shadow-sm" onClick={() => setFilter({ start: startDate, end: endDate })}>
               Tampilkan
             </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="gap-2 shadow-sm"
+                  disabled={!data || isLoading || isFetching}
+                >
+                  <Download className="w-4 h-4" />
+                  Ekspor
+                  <ChevronDown className="w-4 h-4 opacity-60" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (!data) return
+                    exportCashBookPdf(data)
+                  }}
+                >
+                  <FileText className="w-4 h-4" />
+                  Unduh PDF
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (!data) return
+                    exportCashBookExcel(data)
+                  }}
+                >
+                  <FileSpreadsheet className="w-4 h-4" />
+                  Unduh Excel (.xlsx)
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardContent>
       </Card>
